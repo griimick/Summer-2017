@@ -14,7 +14,7 @@ activation = tf.nn.sigmoid(tf.matmul(x, weights)+biases)
 cost = tf.reduce_sum(tf.square(activation - y))/4
 optimizer = tf.train.GradientDescentOptimizer(.1).minimize(cost)
 
-init = tf.initialize_all_variables()
+init = tf.global_variables_initializer()
 
 epoch = 5000
 
