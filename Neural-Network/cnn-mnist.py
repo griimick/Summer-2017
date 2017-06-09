@@ -13,6 +13,16 @@
 #  limitations under the License.
 """Convolutional Neural Network Estimator for MNIST, built with tf.layers."""
 
+# BASIC LOGIC FOR A MODEL
+# def model_fn(features, targets, mode, params):
+#    # Logic to do the following:
+#    # 1. Configure the model via TensorFlow operations
+#    # 2. Define the loss function for training/evaluation
+#    # 3. Define the training operation/optimizer
+#    # 4. Generate predictions
+#    # 5. Return predictions/loss/train_op/eval_metric_ops in ModelFnOps object
+#    return ModelFnOps(mode, predictions, loss, train_op, eval_metric_ops)
+
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
@@ -138,7 +148,7 @@ def main(unused_argv):
       tensors=tensors_to_log, every_n_iter=50)
 
   # Train the model
-  mnist_classifier.fit(
+  learn.SKCompat(mnist_classifier).fit(
       x=train_data,
       y=train_labels,
       batch_size=100,
