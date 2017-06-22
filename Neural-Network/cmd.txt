@@ -1,0 +1,1 @@
+python build_image_data.py --train_directory=./data_dir --output_directory=./ --validation_directory=./data_eval --labels_file=my_label.txt --train_shards=1 --validation_shards=1 --num_threads=1 

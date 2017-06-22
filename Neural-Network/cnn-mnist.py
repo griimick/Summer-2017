@@ -133,6 +133,7 @@ def main(unused_argv):
   # Load training and eval data
   mnist = learn.datasets.load_dataset("mnist")
   train_data = mnist.train.images  # Returns np.array
+  print(train_data)
   train_labels = np.asarray(mnist.train.labels, dtype=np.int32)
   eval_data = mnist.test.images  # Returns np.array
   eval_labels = np.asarray(mnist.test.labels, dtype=np.int32)
@@ -152,7 +153,7 @@ def main(unused_argv):
       x=train_data,
       y=train_labels,
       batch_size=100,
-      steps=20000,
+      steps=20,
       monitors=[logging_hook])
 
   # Configure the accuracy metric for evaluation
@@ -163,7 +164,7 @@ def main(unused_argv):
   }
 
   # Evaluate the model and print results
-  eval_results = mnist_classifier.evaluate(
+  eval_results =mnist_classifier.evaluate(
       x=eval_data, y=eval_labels, metrics=metrics)
   print(eval_results)
 

@@ -197,19 +197,79 @@ def cnn_model_fn(features, labels, mode):
   return model_fn_lib.ModelFnOps(
       mode=mode, predictions=predictions, loss=loss, train_op=train_op)
 
+height=612
+width=452
+nClass=2
+
+# Function to tell TensorFlow how to read a single image from input file
+def getImage(filename):
+    # convert filenames to a queue for an input pipeline.
+    filenameQ = tf.train.string_input_producer([filename],num_epochs=None)
+ 
+    # object to read records
+    recordReader = tf.TFRecordReader()
+
+    # read the full set of features for a single example 
+    key, fullExample = recordReader.read(filenameQ)
+
+    # parse the full example into its' component features.
+    features = tf.parse_single_example(
+        fullExample,
+        features={
+            'image/height': tf.FixedLenFeature([], tf.int64),
+            'image/width': tf.FixedLenFeature([], tf.int64),
+            'image/colorspace': tf.FixedLenFeature([], dtype=tf.string,default_value=''),
+            'image/channels':  tf.FixedLenFeature([], tf.int64),            
+            'image/class/label': tf.FixedLenFeature([],tf.int64),
+            'image/class/text': tf.FixedLenFeature([], dtype=tf.string,default_value=''),
+            'image/format': tf.FixedLenFeature([], dtype=tf.string,default_value=''),
+            'image/filename': tf.FixedLenFeature([], dtype=tf.string,default_value=''),
+            'image/encoded': tf.FixedLenFeature([], dtype=tf.string, default_value='')
+        })
+
+
+    # now we are going to manipulate the label and image features
+
+    label = features['image/class/label']
+    image_buffer = features['image/encoded']
+
+    # Decode the jpeg
+    with tf.name_scope('decode_jpeg',[image_buffer], None):
+        # decode
+        image = tf.image.decode_jpeg(image_buffer, channels=3)
+    
+        # and convert to single precision data type
+        image = tf.image.convert_image_dtype(image, dtype=tf.float32)
+
+
+    # cast image into a single array, where each element corresponds to the greyscale
+    # value of a single pixel. 
+    # the "1-.." part inverts the image, so that the background is black.
+
+    image=tf.reshape(1-tf.image.rgb_to_grayscale(image),[height*width])
+
+    # re-define label as a "one-hot" vector 
+    # it will be [0,1] or [1,0] here. 
+    # This approach can easily be extended to more classes.
+    label=tf.stack(tf.one_hot(label-1, nClass))
+
+    return label, image
 
 def main(unused_argv):
   # Load training and eval data
-  # mnist = learn.datasets.load_dataset("mnist")
+  mnist = learn.datasets.load_dataset("mnist")
+  print(mnist)
   # train_data = mnist.train.images  # Returns np.array
   # train_labels = np.asarray(mnist.train.labels, dtype=np.int32)
   # eval_data = mnist.test.images  # Returns np.array
   # eval_labels = np.asarray(mnist.test.labels, dtype=np.int32)
 
-  train_data =
-  train_labels =  
-  eval_data =
-  eval_labels = 
+  train_labels, train_data = getImage("train-00000-of-00001")
+  
+  # train_data = 
+  # train_labels =  
+  # # eval_data =
+  # eval_labels = 
 
   # Create the Estimator
   data_classifier = learn.Estimator(
@@ -219,14 +279,14 @@ def main(unused_argv):
   # Log the values in the "Softmax" tensor with label "probabilities"
   tensors_to_log = {"probabilities": "softmax_tensor"}
   logging_hook = tf.train.LoggingTensorHook(
-      tensors=tensors_to_log, every_n_iter=50)
+      tensors=tensors_to_log, every_n_iter=10)
 
   # Train the model
   learn.SKCompat(data_classifier).fit(
       x=train_data,
       y=train_labels,
-      batch_size=100,
-      steps=20,
+      batch_size=1,
+      steps=21,
       monitors=[logging_hook])
 
   # Configure the accuracy metric for evaluation
@@ -237,9 +297,9 @@ def main(unused_argv):
   }
 
   # Evaluate the model and print results
-  eval_results = data_classifier.evaluate(
-      x=eval_data, y=eval_labels, metrics=metrics)
-  print(eval_results)
+  # eval_results = data_classifier.evaluate(
+  #     x=eval_data, y=eval_labels, metrics=metrics)
+  # print(eval_results)
 
 
 if __name__ == "__main__":
