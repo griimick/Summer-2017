@@ -3,10 +3,7 @@ import shutil
 import fnmatch
 import cv2
 
-trainDirs = []
-evalDirs = []
-wrongDirs = ["B002"]
-rightDirs = ["B0025"]
+rightDirs = ["B0010","B0011","B0012","B0014","B0016","B0017", "B0018", "B0019", "B0021", "B0022", "B0023", "B0032"]
 
 def gen_find(filepat, top):
 	for path, dirlist, filelist in os.walk(top):
@@ -15,7 +12,7 @@ def gen_find(filepat, top):
 
 if __name__ == "__main__":
 	src = "E:\\New folder\\Dropbox\\Baggages"
-	dst = "E:\\Data\\data_eval\\label_0"
+	dst = "E:\\Data\\data_all\\label_gun"
 	dstEval = "E:\\Data\\data_eval\\label_0"
 	dstTrain = "E:\\Data\\data_dir\\label_0"
 	

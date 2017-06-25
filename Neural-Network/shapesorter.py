@@ -13,8 +13,8 @@ nClass=2
 simpleModel=False
 
 # Dimensions of image (pixels)
-height=452
-width=612
+height=220
+width=300
 
 # Function to tell TensorFlow how to read a single image from input file
 def getImage(filename):
